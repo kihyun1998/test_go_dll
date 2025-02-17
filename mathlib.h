@@ -76,6 +76,7 @@ extern "C" {
 
 extern __declspec(dllexport) GoInt Add(GoInt a, GoInt b);
 extern __declspec(dllexport) GoInt Multiply(GoInt a, GoInt b);
+extern __declspec(dllexport) char* SayHello(char* name);
 
 #ifdef __cplusplus
 }
