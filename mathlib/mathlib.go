@@ -1,5 +1,12 @@
 package main
 
+/*
+#include <stdlib.h>
+typedef struct {
+    char *msg;
+    int isOk;
+} GoResult;
+*/
 import "C"
 import (
 	"fmt"
@@ -18,25 +25,27 @@ func Multiply(a, b int) int {
 
 //export SayHello
 func SayHello(name *C.char) *C.char {
-	// Go 문자열로 변환
 	goName := C.GoString(name)
-	// 새로운 문자열 생성
 	result := fmt.Sprintf("Hello, %s!", goName)
-	// C 문자열로 변환하여 반환
 	return C.CString(result)
 }
 
 //export CheckBook
-func CheckBook(bookName *C.char) (msg *C.char, isOk bool) {
+func CheckBook(result *C.GoResult, bookName *C.char) {
 	goBookName := C.GoString(bookName)
+	var msg string
+	var ok int
 
-	// "golang"이 포함된 경우 책이 있다고 가정
-	if contains := strings.Contains(strings.ToLower(goBookName), "golang"); contains {
-		return C.CString(fmt.Sprintf("Book '%s' is available", goBookName)), true
+	if strings.Contains(strings.ToLower(goBookName), "golang") {
+		msg = fmt.Sprintf("Book '%s' is available", goBookName)
+		ok = 1
+	} else {
+		msg = fmt.Sprintf("Sorry, '%s' is not available", goBookName)
+		ok = 0
 	}
 
-	return C.CString(fmt.Sprintf("Sorry, '%s' is not available", goBookName)), false
+	result.msg = C.CString(msg)
+	result.isOk = C.int(ok)
 }
 
-func main() {
-}
+func main() {}

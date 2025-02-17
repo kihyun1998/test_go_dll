@@ -19,6 +19,15 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 /* Start of preamble from import "C" comments.  */
 
 
+#line 3 "mathlib.go"
+
+#include <stdlib.h>
+typedef struct {
+    char *msg;
+    int isOk;
+} GoResult;
+
+#line 1 "cgo-generated-wrapper"
 
 
 /* End of preamble from import "C" comments.  */
@@ -77,13 +86,7 @@ extern "C" {
 extern __declspec(dllexport) GoInt Add(GoInt a, GoInt b);
 extern __declspec(dllexport) GoInt Multiply(GoInt a, GoInt b);
 extern __declspec(dllexport) char* SayHello(char* name);
-
-/* Return type for CheckBook */
-struct CheckBook_return {
-	char* r0; /* msg */
-	GoUint8 r1; /* isOk */
-};
-extern __declspec(dllexport) struct CheckBook_return CheckBook(char* bookName);
+extern __declspec(dllexport) void CheckBook(GoResult* result, char* bookName);
 
 #ifdef __cplusplus
 }
