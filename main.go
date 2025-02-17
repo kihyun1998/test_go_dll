@@ -6,6 +6,21 @@ import (
 	"unsafe"
 )
 
+type GoResult struct {
+	msg  uintptr
+	isOk bool
+}
+
+func cStringToGoString(cString uintptr) string {
+	result := ""
+	ptr := (*byte)(unsafe.Pointer(cString))
+	for *ptr != 0 {
+		result += string(*ptr)
+		ptr = (*byte)(unsafe.Pointer(uintptr(unsafe.Pointer(ptr)) + 1))
+	}
+	return result
+}
+
 func main() {
 	// DLL 로드
 	dll, err := syscall.LoadDLL("mathlib.dll")
@@ -50,12 +65,30 @@ func main() {
 
 	// C 문자열을 Go 문자열로 변환
 	// C 문자열은 null로 끝나므로, null을 만날 때까지 읽어서 변환합니다
-	result_str := ""
-	ptr := (*byte)(unsafe.Pointer(resultPtr))
-	for *ptr != 0 {
-		result_str += string(*ptr)
-		ptr = (*byte)(unsafe.Pointer(uintptr(unsafe.Pointer(ptr)) + 1))
-	}
+	result_str := cStringToGoString(resultPtr)
 
 	fmt.Println(result_str)
+
+	checkBookProc, err := dll.FindProc("CheckBook")
+	if err != nil {
+		fmt.Printf("CheckBook 함수를 찾을 수 없습니다: %v\n", err)
+		return
+	}
+
+	bookName := "Golang Programming"
+	bookPtr, err := syscall.BytePtrFromString(bookName)
+	if err != nil {
+		fmt.Printf("문자열 변환 실패: %v\n", err)
+		return
+	}
+
+	msgPtr, _, _ := checkBookProc.Call(uintptr(unsafe.Pointer(bookPtr)))
+
+	resultBook := (*GoResult)(unsafe.Pointer(&msgPtr))
+
+	result_test := cStringToGoString(resultBook.msg)
+
+	fmt.Printf("[Book] isOK: %t\n", resultBook.isOk)
+	fmt.Printf("[Book] msg: %s\n", result_test)
+
 }
