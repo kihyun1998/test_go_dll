@@ -1,5 +1,9 @@
+// example/main.go
 package main
 
+/*
+#include <stdlib.h>
+*/
 import "C"
 import (
 	"fmt"
@@ -17,7 +21,8 @@ func SayHello(name *C.char) (*C.char, bool) {
 	}
 
 	result := fmt.Sprintf("안녕하세요, %s님!", goName)
-	return C.CString(result), true
+	cstr := C.CString(result)
+	return cstr, true
 }
 
 //export RepeatString
@@ -39,7 +44,8 @@ func RepeatString(text *C.char, count C.int) (*C.char, bool) {
 		result += goText
 	}
 
-	return C.CString(result), true
+	cstr := C.CString(result)
+	return cstr, true
 }
 
 func main() {}
